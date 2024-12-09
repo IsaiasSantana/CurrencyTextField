@@ -8,16 +8,16 @@
 import Foundation
 
 extension CurrencyField {
-    /// Implements this protocol if you want a custom behavior to the valued showed in the TextField.
+    //Implement this protocol if you want a custom behavior for the value shown in the TextField.
     public protocol Formatter {
-        /// Use this method to return the `value` normalized.
-        /// - Parameter text: text with only numbers or an empty string from the TextField.
-        /// - Returns: A normalized value to be displayed and update the binded value.
+        /// Use this method to return the normalized value.
+        /// - Parameter text: Text containing only numbers or an empty string from the TextField.
+        /// - Returns: A normalized value to be displayed and used to update the @Binding property
         func value(from text: String) -> Decimal?
 
-        /// Use this method to format the value that will be displayed on TextField. Don't call ``value(from:)``  inside this method, because the
-        /// Textfield invokes it before to call ``formatted(_:)``.
-        /// - Parameter value: the value to formatted,
+        /// Use this method to format the value that will be displayed in the `TextField`.
+        /// Do not call ``value(from:)`` inside this method, because the `TextField` invokes it before calling ``formatted(_:)``.
+        /// - Parameter value: The value to be formatted.
         /// - Returns: An `NSAttributedString` to be displayed.
         func formatted(_ value: Decimal) -> NSAttributedString
     }
