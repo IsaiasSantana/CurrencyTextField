@@ -16,6 +16,7 @@ extension CurrencyField {
         let textAlignment: NSTextAlignment
         let font: UIFont
         let color: UIColor
+        let allowClearFieldWhenValueIsZero: Bool
 
         private let formatter = NumberFormatter()
         private let attributtedString = NSMutableAttributedString()
@@ -26,7 +27,8 @@ extension CurrencyField {
             decimalPlaces: Int,
             textAlignment: NSTextAlignment = .center,
             font: UIFont = UIFont.systemFont(ofSize: 30),
-            color: UIColor = UIColor.darkText
+            color: UIColor = UIColor.darkText,
+            allowClearFieldWhenValueIsZero: Bool
         ) {
             self.currencyCode = currencyCode
             self.locale = locale
@@ -34,6 +36,7 @@ extension CurrencyField {
             self.textAlignment = textAlignment
             self.font = font
             self.color = color
+            self.allowClearFieldWhenValueIsZero = allowClearFieldWhenValueIsZero
 
             formatter.numberStyle = .currency
             formatter.currencyCode = currencyCode
@@ -47,7 +50,13 @@ extension CurrencyField {
         }
 
         func formatted(_ value: Decimal) -> NSAttributedString {
-            let text = formatter.string(from: NSDecimalNumber(decimal: value)) ?? ""
+            let text: String
+
+            if allowClearFieldWhenValueIsZero && value == .zero {
+                text = ""
+            } else {
+                text = formatter.string(from: NSDecimalNumber(decimal: value)) ?? ""
+            }
 
             attributtedString.mutableString.setString(text)
 

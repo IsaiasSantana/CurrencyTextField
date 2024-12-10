@@ -20,7 +20,11 @@ final class _CurrencyTextField: UITextField {
     }
 
     override func closestPosition(to point: CGPoint) -> UITextPosition? {
-        endOfDocument
+        if (text ?? "").isEmpty {
+            return super.closestPosition(to: point)
+        }
+
+        return endOfDocument
     }
 
     override func caretRect(for position: UITextPosition) -> CGRect {
@@ -57,6 +61,10 @@ final class _CurrencyTextField: UITextField {
 
         if displayCaret != configuration.displayCaret {
             displayCaret = configuration.displayCaret
+        }
+
+        if textAlignment != configuration.textAligment {
+            textAlignment = configuration.textAligment
         }
 
         if adjustsFontSizeToFitWidth != configuration.adjustsFontSizeToFitWidth {

@@ -32,6 +32,8 @@ extension CurrencyField {
         /// If `true`, the `TextField` will clear its content.
         public let allowClearFieldWhenValueIsZero: Bool
 
+        /// The text alignment.
+        public let textAligment: NSTextAlignment
 
         /// See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/adjustsfontsizetofitwidth)
         public let adjustsFontSizeToFitWidth: Bool
@@ -44,6 +46,7 @@ extension CurrencyField {
 
         /// Instantiates a ``Configuration`` using a default formatter.
         /// - Parameters:
+        ///   - formatter: The Custom ``Formatter``.
         ///   - placeholder: The attributed string that displays when there is no other text in the text field.
         ///   - textColor: The color of the text.
         ///   - textAligment: The text alignment.
@@ -55,11 +58,12 @@ extension CurrencyField {
         ///   - displayCaret:  if `true` the caret will be displayed.
         ///   - caretColor: The color of the caret.
         ///   - displayDoneButtonAsAccessory: `true` to show an accessory view in the keyboard.
-        ///   - allowClearFieldWhenValueIsZero:  If `true`, the `TextField` will clear its content.
+        ///   - allowClearFieldWhenValueIsZero:  If `true`, the `TextField` will clear its content. If you create your own custom formatter, you are responsible for this logic.
         ///   - adjustsFontSizeToFitWidth: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/adjustsfontsizetofitwidth)
         ///   - minimumFontSize: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/minimumfontsize)
         ///   - onFocusChanged: Checks whether the keyboard is the first responder.
         public init(
+            formatter: Formatter? = nil,
             placeholder: NSAttributedString? = nil,
             textColor: UIColor = .systemGray,
             textAligment: NSTextAlignment = .center,
@@ -79,14 +83,17 @@ extension CurrencyField {
             self.placeholder = placeholder
             self.maximumValue = maximumValue
 
-            if #available(iOS 15.0, *) {
+            if let formatter {
+                self.formatter = formatter
+            } else if #available(iOS 15.0, *) {
                 self.formatter = DefaultFormatter(
                     currencyCode: currencyCode,
                     locale: locale,
                     decimalPlaces: decimalPlaces < 0 ? 2 : decimalPlaces,
                     textAlignment: textAligment,
                     font: font,
-                    color: textColor)
+                    color: textColor,
+                    allowClearFieldWhenValueIsZero: allowClearFieldWhenValueIsZero)
             } else {
                 self.formatter = FallbackFormatter(
                     currencyCode: currencyCode,
@@ -94,7 +101,8 @@ extension CurrencyField {
                     decimalPlaces: decimalPlaces,
                     textAlignment: textAligment,
                     font: font,
-                    color: textColor)
+                    color: textColor,
+                    allowClearFieldWhenValueIsZero: allowClearFieldWhenValueIsZero)
             }
 
             self.displayCaret = displayCaret
@@ -104,42 +112,7 @@ extension CurrencyField {
             self.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth
             self.minimumFontSize = minimumFontSize
             self.onFocusChanged = onFocusChanged
-        }
-
-        /// Instantiates a ``Configuration`` using a custom formatter.
-        /// - Parameters:
-        ///   - formatter: The Custom ``Formatter``.
-        ///   - placeholder: The attributed string that displays when there is no other text in the text field.
-        ///   - maximumValue: The maximum allowed value of the ``CurrencyField``.
-        ///   - displayCaret:  if `true` the caret will be displayed.
-        ///   - caretColor: The color of the caret.
-        ///   - displayDoneButtonAsAccessory: `true` to show an accessory view in the keyboard.
-        ///   - allowClearFieldWhenValueIsZero:  If `true`, the `TextField` will clear its content.
-        ///   - adjustsFontSizeToFitWidth: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/adjustsfontsizetofitwidth)
-        ///   - minimumFontSize: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/minimumfontsize)
-        ///   - onFocusChanged: Checks whether the keyboard is the first responder.
-        public init(
-            formatter: Formatter,
-            placeholder: NSAttributedString? = nil,
-            maximumValue: Decimal = 1_000_000_000_000,
-            displayCaret: Bool = true,
-            caretColor: UIColor? = nil,
-            displayDoneButtonAsAccessory: Bool = true,
-            allowClearFieldWhenValueIsZero: Bool = false,
-            adjustsFontSizeToFitWidth: Bool = false,
-            minimumFontSize: CGFloat = 0.0,
-            onFocusChanged: ((Bool) -> Void)? = nil
-        ) {
-            self.formatter = formatter
-            self.placeholder = placeholder
-            self.maximumValue = maximumValue
-            self.displayCaret = displayCaret
-            self.displayDoneButtonAsAccessory = displayDoneButtonAsAccessory
-            self.allowClearFieldWhenValueIsZero = allowClearFieldWhenValueIsZero
-            self.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth
-            self.minimumFontSize = minimumFontSize
-            self.onFocusChanged = onFocusChanged
-            self.caretColor = caretColor
+            self.textAligment = textAligment
         }
     }
 }
