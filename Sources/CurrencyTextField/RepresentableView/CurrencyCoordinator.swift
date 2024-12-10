@@ -50,11 +50,17 @@ final class CurrencyCoordinator: NSObject, UITextFieldDelegate {
 
 extension CurrencyCoordinator: _CurrencyTextFieldDelegate {
     func currencyTextFieldDidBeginEditing(_ currencyTextField: _CurrencyTextField) {
-        configuration.onFocusChanged?(true)
+        onFocusChanged(true)
     }
 
     func currencyTextFieldDidEndEditing(_ currencyTextField: _CurrencyTextField) {
-        configuration.onFocusChanged?(false)
+        onFocusChanged(false)
+    }
+
+    private func onFocusChanged(_ isFocused: Bool) {
+        DispatchQueue.main.async {
+            self.configuration.onFocusChanged?(isFocused)
+        }
     }
 }
 
