@@ -8,7 +8,7 @@
 import Foundation
 
 extension CurrencyField {
-    //Implement this protocol if you want a custom behavior for the value shown in the TextField.
+    /// Implement this protocol if you want a custom behavior for the value shown in the TextField.
     public protocol Formatter {
         /// Use this method to return the normalized value.
         /// - Parameter text: Text containing only numbers or an empty string from the TextField.
