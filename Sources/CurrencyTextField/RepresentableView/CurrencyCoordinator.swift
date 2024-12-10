@@ -37,11 +37,6 @@ final class CurrencyCoordinator: NSObject, UITextFieldDelegate {
             self.value = newValue
         }
 
-        if newValue == .zero, configuration.allowClearFieldWhenValueIsZero {
-            textField.attributedText = nil
-            return false
-        }
-
         textField.attributedText = configuration.formatter.formatted(newValue)
 
         return false
