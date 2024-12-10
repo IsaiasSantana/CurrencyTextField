@@ -33,14 +33,16 @@ final class CurrencyCoordinator: NSObject, UITextFieldDelegate {
             return false
         }
 
-        value = newValue
+        DispatchQueue.main.async {
+            self.value = newValue
+        }
 
         if newValue == .zero, configuration.allowClearFieldWhenValueIsZero {
             textField.attributedText = nil
             return false
         }
 
-        textField.attributedText = configuration.formatter.formatted(value)
+        textField.attributedText = configuration.formatter.formatted(newValue)
 
         return false
     }

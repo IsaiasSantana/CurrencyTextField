@@ -12,7 +12,7 @@ final class _CurrencyTextField: UITextField {
         setup()
     }
 
-    private var displayCaret = true
+    var displayCaret = true
     weak var currencyDelegate: _CurrencyTextFieldDelegate?
 
     required init?(coder: NSCoder) {
@@ -21,14 +21,6 @@ final class _CurrencyTextField: UITextField {
 
     override func closestPosition(to point: CGPoint) -> UITextPosition? {
         endOfDocument
-    }
-
-    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        false
-    }
-
-    override func selectionRects(for range: UITextRange) -> [UITextSelectionRect] {
-        []
     }
 
     override func caretRect(for position: UITextPosition) -> CGRect {
@@ -63,9 +55,18 @@ final class _CurrencyTextField: UITextField {
             removeInputAssessoryView()
         }
 
-        displayCaret = configuration.displayCaret
-        adjustsFontSizeToFitWidth = configuration.adjustsFontSizeToFitWidth
-        minimumFontSize = configuration.minimumFontSize
+        if displayCaret != configuration.displayCaret {
+            displayCaret = configuration.displayCaret
+        }
+
+        if adjustsFontSizeToFitWidth != configuration.adjustsFontSizeToFitWidth {
+            adjustsFontSizeToFitWidth = configuration.adjustsFontSizeToFitWidth
+        }
+
+        if minimumFontSize != configuration.minimumFontSize {
+            minimumFontSize = configuration.minimumFontSize
+        }
+
         if let caretColor = configuration.caretColor, tintColor != caretColor {
             tintColor = caretColor
         }
@@ -100,6 +101,9 @@ final class _CurrencyTextField: UITextField {
     }
 
     private func removeInputAssessoryView() {
+        guard inputAccessoryView != nil else {
+            return
+        }
         inputAccessoryView = nil
     }
 }

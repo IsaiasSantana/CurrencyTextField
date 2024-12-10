@@ -17,11 +17,15 @@ struct CurrencyTextFieldRepresentable: UIViewRepresentable {
         textField.attributedPlaceholder = configuration.placeholder
         textField.attributedText = configuration.formatter.formatted(value)
         textField.currencyDelegate = context.coordinator
+        textField.updateView(with: configuration)
 
         return textField
     }
 
     func updateUIView(_ uiView: _CurrencyTextField, context: Context) {
+        if uiView.attributedText != configuration.formatter.formatted(value) {
+            uiView.attributedText = configuration.formatter.formatted(value)
+        }
         uiView.updateView(with: configuration)
     }
 
