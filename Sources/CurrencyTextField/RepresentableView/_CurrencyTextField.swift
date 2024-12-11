@@ -7,28 +7,48 @@ protocol _CurrencyTextFieldDelegate: AnyObject {
 }
 
 final class _CurrencyTextField: UITextField {
+    override var selectedTextRange: UITextRange? {
+        didSet {
+            if let selectedTextRange, readOnly {
+                tintColor = selectedTextRange.isEmpty ? .clear : caretColor
+            }
+        }
+    }
+
+    private lazy var doneButtonToolbar: UIToolbar = {
+        let toolbar = UIToolbar()
+        let doneButton: UIBarButtonItem
+
+        if #available(iOS 15.0, *) {
+            doneButton = UIBarButtonItem(systemItem: .done, primaryAction: .init(handler: { [weak self] _  in
+                self?.resignFirstResponder()
+            }))
+
+            toolbar.items = [.flexibleSpace(), doneButton]
+        } else {
+            let space = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
+            doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(closeKeyboard))
+            toolbar.items = [space, doneButton]
+        }
+
+        toolbar.sizeToFit()
+
+        return toolbar
+    }()
+
+    var displayCaret = true
+    var readOnly = false
+    var caretColor: UIColor = .clear
+
+    weak var currencyDelegate: _CurrencyTextFieldDelegate?
+
     init() {
         super.init(frame: .zero)
         setup()
     }
 
-    var displayCaret = true
-    weak var currencyDelegate: _CurrencyTextFieldDelegate?
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func closestPosition(to point: CGPoint) -> UITextPosition? {
-        if (text ?? "").isEmpty {
-            return super.closestPosition(to: point)
-        }
-
-        return endOfDocument
-    }
-
-    override func caretRect(for position: UITextPosition) -> CGRect {
-        return displayCaret ? super.caretRect(for: position) : .null
     }
 
     private func setup() {
@@ -40,6 +60,35 @@ final class _CurrencyTextField: UITextField {
 
         addTarget(self, action: #selector(didBeginEditing), for: .editingDidBegin)
         addTarget(self, action: #selector(didEndEditing), for: .editingDidEnd)
+        caretColor = tintColor
+    }
+
+    override func closestPosition(to point: CGPoint) -> UITextPosition? {
+        if (text ?? "").isEmpty {
+            return super.closestPosition(to: point)
+        }
+
+        return endOfDocument
+    }
+
+    override func caretRect(for position: UITextPosition) -> CGRect {
+        if readOnly {
+            return super.caretRect(for: position)
+        }
+        return displayCaret ? super.caretRect(for: position) : .null
+    }
+
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if readOnly {
+            if action == #selector(UIResponderStandardEditActions.select(_:)) ||
+                action == #selector(UIResponderStandardEditActions.selectAll(_:)) ||
+                action == #selector(UIResponderStandardEditActions.copy(_:)) {
+                return true
+            }
+            return false
+        }
+
+        return super.canPerformAction(action, withSender: sender)
     }
 
     @objc
@@ -53,8 +102,11 @@ final class _CurrencyTextField: UITextField {
     }
 
     func updateView(with configuration: CurrencyField.Configuration) {
+        readOnly = configuration.readOnly
+        setupInputViewIfNeeded()
+
         if configuration.displayDoneButtonAsAccessory {
-            setupInputAssessoryView()
+            setupInputAssessoryView(displayDoneButtonAsAccessory: true)
         } else {
             removeInputAssessoryView()
         }
@@ -76,31 +128,35 @@ final class _CurrencyTextField: UITextField {
         }
 
         if let caretColor = configuration.caretColor, tintColor != caretColor {
+            self.caretColor = caretColor
             tintColor = caretColor
+        }
+
+        if readOnly {
+            tintColor = .clear
         }
     }
 
-    private func setupInputAssessoryView() {
-        guard inputAccessoryView == nil else {
-            return
-        }
-        let toolbar = UIToolbar()
-        let doneButton: UIBarButtonItem
-
-        if #available(iOS 15.0, *) {
-            doneButton = UIBarButtonItem(systemItem: .done, primaryAction: .init(handler: { [weak self] _  in
-                self?.resignFirstResponder()
-            }))
-
-            toolbar.items = [.flexibleSpace(), doneButton]
+    private func setupInputAssessoryView(displayDoneButtonAsAccessory: Bool) {
+        if readOnly {
+            removeInputAssessoryView()
         } else {
-            let space = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.flexibleSpace, target: nil, action: nil)
-            doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(closeKeyboard))
-            toolbar.items = [space, doneButton]
+            if inputAccessoryView == nil, displayDoneButtonAsAccessory {
+                inputAccessoryView = doneButtonToolbar
+            }
         }
-        
-        toolbar.sizeToFit()
-        inputAccessoryView = toolbar
+    }
+
+    private func setupInputViewIfNeeded() {
+        if readOnly {
+            if inputView == nil {
+                inputView = UIView()
+            }
+        } else {
+            if inputView != nil {
+                inputView = nil
+            }
+        }
     }
 
     @objc

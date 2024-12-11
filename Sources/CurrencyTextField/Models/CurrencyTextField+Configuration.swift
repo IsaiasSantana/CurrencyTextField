@@ -8,9 +8,9 @@
 import Foundation
 import SwiftUI
 
-extension CurrencyField {
+public extension CurrencyField {
     /// Use this struct to configure a ``CurrencyField``.
-    public struct Configuration {
+    struct Configuration {
         /// The attributed string that displays when there is no other text in the text field.
         public let placeholder: NSAttributedString?
 
@@ -41,6 +41,9 @@ extension CurrencyField {
         /// See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/minimumfontsize)
         public let minimumFontSize: CGFloat
 
+        /// The text field does not allow deleting its content.
+        public let readOnly: Bool
+
         /// Checks whether the keyboard is the first responder.
         public let onFocusChanged: ((Bool) -> Void)?
 
@@ -61,6 +64,7 @@ extension CurrencyField {
         ///   - allowClearFieldWhenValueIsZero:  If `true`, the `TextField` will clear its content. If you create your own custom formatter, you are responsible for this logic.
         ///   - adjustsFontSizeToFitWidth: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/adjustsfontsizetofitwidth)
         ///   - minimumFontSize: See [Apple doc](https://developer.apple.com/documentation/uikit/uitextfield/minimumfontsize)
+        ///   - readOnly: If `true`, the text field allows the user to copy its content but prevents editing. When `readOnly` is `true`, the `displayCaret` setting is ignored.
         ///   - onFocusChanged: Checks whether the keyboard is the first responder.
         public init(
             formatter: Formatter? = nil,
@@ -78,6 +82,7 @@ extension CurrencyField {
             allowClearFieldWhenValueIsZero: Bool = false,
             adjustsFontSizeToFitWidth: Bool = false,
             minimumFontSize: CGFloat = 0.0,
+            readOnly: Bool = false,
             onFocusChanged: ((Bool) -> Void)? = nil
         ) {
             self.placeholder = placeholder
@@ -111,6 +116,7 @@ extension CurrencyField {
             self.allowClearFieldWhenValueIsZero = allowClearFieldWhenValueIsZero
             self.adjustsFontSizeToFitWidth = adjustsFontSizeToFitWidth
             self.minimumFontSize = minimumFontSize
+            self.readOnly = readOnly
             self.onFocusChanged = onFocusChanged
             self.textAligment = textAligment
         }
