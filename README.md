@@ -24,6 +24,7 @@ struct ContentView: View {
                 allowClearFieldWhenValueIsZero: false,
                 adjustsFontSizeToFitWidth: true,
                 minimumFontSize: 0.1,
+                readOnly: false,
                 onFocusChanged: { focus in
                     isFocused = focus
                 })
