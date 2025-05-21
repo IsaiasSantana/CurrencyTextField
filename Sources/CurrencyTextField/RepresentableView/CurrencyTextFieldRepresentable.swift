@@ -23,9 +23,8 @@ struct CurrencyTextFieldRepresentable: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: _CurrencyTextField, context: Context) {
-        if uiView.attributedText != configuration.formatter.formatted(value) {
-            uiView.attributedText = configuration.formatter.formatted(value)
-        }
+        context.coordinator.configuration = configuration
+        uiView.attributedText = configuration.formatter.formatted(value)
         uiView.updateView(with: configuration)
     }
 

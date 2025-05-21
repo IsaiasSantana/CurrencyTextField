@@ -115,6 +115,8 @@ final class _CurrencyTextField: UITextField {
             displayCaret = configuration.displayCaret
         }
 
+        attributedPlaceholder = configuration.placeholder
+
         if textAlignment != configuration.textAligment {
             textAlignment = configuration.textAligment
         }

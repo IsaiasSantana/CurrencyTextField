@@ -10,7 +10,7 @@ import SwiftUI
 @MainActor
 final class CurrencyCoordinator: NSObject, UITextFieldDelegate {
     @Binding private var value: Decimal
-    let configuration: CurrencyField.Configuration
+    var configuration: CurrencyField.Configuration
 
     init(value: Binding<Decimal>, configuration: CurrencyField.Configuration) {
         self._value = value
@@ -21,6 +21,10 @@ final class CurrencyCoordinator: NSObject, UITextFieldDelegate {
         _ textField: UITextField, shouldChangeCharactersIn range: NSRange,
         replacementString string: String
     ) -> Bool {
+        if configuration.readOnly {
+            return false
+        }
+
         guard let nstring = textField.text as NSString? else {
             return true
         }
