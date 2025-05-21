@@ -225,7 +225,6 @@ struct Sample: View {
             .onFocusChanged { isFocused in
                 print("Is focused \(isFocused)")
             }
-
         }
     }
 }
